@@ -1,0 +1,14 @@
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+FPS = 60
+DEBRIS_SPAWN_RATE = 500  # ms between debris spawns
+ASTEROID_SPAWN_RATE = 1000  # ms between asteroid spawns
+PLAYER_SPEED = 5
+DEBRIS_SPEED = 2
+ASTEROID_SPEED = 3
+BG_COLOR = (20, 30, 50)  # Dark blue space
+PLAYER_COLOR = (0, 100, 255)  # Blue
+DEBRIS_COLOR = (0, 255, 100)  # Green
+ASTEROID_COLOR = (255, 50, 50)  # Red
+TEXT_COLOR = (255, 255, 255)  # White
+HEALTH_BAR_COLOR = (255, 0, 0)  # Red
