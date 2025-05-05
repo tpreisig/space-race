@@ -1,10 +1,10 @@
-
+from os.path import join
 import pygame
 import random
 import pygame.freetype
 import config
 
-# Initializing the game
+# Initialize Pygame
 pygame.init()
 pygame.mixer.init()
 
@@ -14,21 +14,25 @@ pygame.display.set_caption("Space Race")
 clock = pygame.time.Clock()
 
 # Load assets
-# Placeholder: Use rectangles/circles; replace with images in real game
-def create_player_surface():
-    surf = pygame.Surface((40, 40), pygame.SRCALPHA)
-    pygame.draw.polygon(surf, config.PLAYER_COLOR, [(20, 0), (0, 40), (40, 40)])  # Triangle
-    return surf
 
-def create_debris_surface():
-    surf = pygame.Surface((20, 20), pygame.SRCALPHA)
-    pygame.draw.circle(surf, config.DEBRIS_COLOR, (10, 10), 10)  # Circle
-    return surf
+def rocket_surface():
+    rocket = pygame.image.load(join("images", "rocket.png"))
+    return rocket
 
-def create_asteroid_surface():
-    surf = pygame.Surface((30, 30), pygame.SRCALPHA)
-    pygame.draw.rect(surf, config.ASTEROID_COLOR, (0, 0, 30, 30))  # Square
-    return surf
+def collect_it():
+    col1 = pygame.image.load(join("images", "coll1.png"))
+    col2 = pygame.image.load(join("images", "coll2.png"))
+    col3 = pygame.image.load(join("images", "coll3.png"))
+    col4 = pygame.image.load(join("images", "coll4.png"))
+    col5 = pygame.image.load(join("images", "coll5.png"))
+    col6 = pygame.image.load(join("images", "coll6.png"))
+    col7 = pygame.image.load(join("images", "coll7.png"))
+    col8 = pygame.image.load(join("images", "coll8.png"))
+    return random.choice([col1, col2, col3, col4, col5, col6, col7, col8])
+
+def create_asteroid():
+    meteor = pygame.image.load((join("images", "meteor.png")))
+    return meteor
 
 # Load sounds (replace with your file paths)
 try:
@@ -48,7 +52,7 @@ font = pygame.freetype.SysFont(None, 36)
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = create_player_surface()
+        self.image = rocket_surface()
         self.rect = self.image.get_rect(center=(config.SCREEN_WIDTH // 2, config.SCREEN_HEIGHT // 2))
         self.health = 100
 
@@ -69,12 +73,12 @@ class Player(pygame.sprite.Sprite):
         # Keep player in bounds
         self.rect.clamp_ip(screen.get_rect())
 
-class Debris(pygame.sprite.Sprite):
+class Collectables(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = create_debris_surface()
+        self.image = collect_it()
         self.rect = self.image.get_rect(center=(random.randint(0, config.SCREEN_WIDTH), 0))
-        self.speed = config.DEBRIS_SPEED
+        self.speed = config.COLLECTABLES_SPEED
 
     def update(self):
         self.rect.y += self.speed
@@ -84,7 +88,7 @@ class Debris(pygame.sprite.Sprite):
 class Asteroid(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = create_asteroid_surface()
+        self.image = create_asteroid()
         self.rect = self.image.get_rect(center=(random.randint(0, config.SCREEN_WIDTH), 0))
         self.speed = config.ASTEROID_SPEED
 
@@ -95,18 +99,20 @@ class Asteroid(pygame.sprite.Sprite):
 
 # Sprite groups
 all_sprites = pygame.sprite.Group()
-debris_group = pygame.sprite.Group()
+collectables_group = pygame.sprite.Group()
 asteroid_group = pygame.sprite.Group()
 
 # Game variables
 player = Player()
 all_sprites.add(player)
+space_color = random.choice([config.BG_COLOR1, config.BG_COLOR2, config.BG_COLOR3])
 score = 0
 running = True
 game_over = False
 game_over_time = None
-debris_timer = 0
+collectables_timer = 0
 asteroid_timer = 0
+
 
 # Main game loop
 while running:
@@ -122,24 +128,24 @@ while running:
                     # Reset game
                     player = Player()
                     all_sprites.empty()
-                    debris_group.empty()
+                    collectables_group.empty()
                     asteroid_group.empty()
                     all_sprites.add(player)
                     score = 0
                     game_over = False
                     game_over_time = None
-                    debris_timer = 0
+                    collectables_timer = 0
                     asteroid_timer = 0
 
     if not game_over:
         # Update
         current_time = pygame.time.get_ticks()
-        # Spawn debris
-        if current_time - debris_timer > config.DEBRIS_SPAWN_RATE:
-            debris = Debris()
-            all_sprites.add(debris)
-            debris_group.add(debris)
-            debris_timer = current_time
+        # Spawn collectables
+        if current_time - collectables_timer > config.COLLECTABLES_SPAWN_RATE:
+            collectables = Collectables()
+            all_sprites.add(collectables)
+            collectables_group.add(collectables)
+            collectables_timer = current_time
         # Spawn asteroids
         if current_time - asteroid_timer > config.ASTEROID_SPAWN_RATE:
             asteroid = Asteroid()
@@ -150,7 +156,7 @@ while running:
         all_sprites.update()
 
         # Collisions
-        if pygame.sprite.spritecollide(player, debris_group, True):  # Collect debris
+        if pygame.sprite.spritecollide(player, collectables_group, True):  # Collect them
             score += 10
             if score_up:
                 score_up.play()
@@ -163,7 +169,7 @@ while running:
                 game_over_time = pygame.time.get_ticks()
 
         # Draw
-        screen.fill(config.BG_COLOR)
+        screen.fill(space_color)
         all_sprites.draw(screen)
         # Draw score
         font.render_to(screen, (10, 10), f"Score: {score}", config.TEXT_COLOR)
@@ -174,14 +180,15 @@ while running:
 
     else:
         # Game over screen
-        screen.fill(config.BG_COLOR)
-        font.render_to(screen, (config.SCREEN_WIDTH // 2 - 100, config.SCREEN_HEIGHT // 2 - 20),
+        screen.fill(space_color)
+        font.render_to(screen, (config.SCREEN_WIDTH // 2 - 180, config.SCREEN_HEIGHT // 2 - 20),
                        f"Game Over! Score: {score}", config.TEXT_COLOR)
         if pygame.time.get_ticks() - game_over_time > 2000:
-            font.render_to(screen, (config.SCREEN_WIDTH // 2 - 100, config.SCREEN_HEIGHT // 2 + 20),
+            font.render_to(screen, (config.SCREEN_WIDTH // 2 - 180, config.SCREEN_HEIGHT // 2 + 20),
                            "Press R to Restart", config.TEXT_COLOR)
 
     pygame.display.flip()
     clock.tick(config.FPS)
+
 
 pygame.quit()
