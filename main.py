@@ -13,6 +13,8 @@ screen = pygame.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
 pygame.display.set_caption("Space Race")
 clock = pygame.time.Clock()
 
+gradient_surface = pygame.Surface((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
+
 # Function to create a linear gradient for a background fill
 def create_linear_gradient(surface, start_color, end_color):
     width, height = surface.get_size()
