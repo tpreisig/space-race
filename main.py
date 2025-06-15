@@ -122,7 +122,6 @@ asteroid_group = pygame.sprite.Group()
 # Game variables
 player = Player()
 all_sprites.add(player)
-space_color = random.choice([config.BG_COLOR1, config.BG_COLOR2, config.BG_COLOR3])
 score = 0
 running = True
 game_over = False
