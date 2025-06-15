@@ -13,6 +13,23 @@ screen = pygame.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
 pygame.display.set_caption("Space Race")
 clock = pygame.time.Clock()
 
+# Function to create a linear gradient for a background fill
+def create_linear_gradient(surface, start_color, end_color):
+    width, height = surface.get_size()
+    # Interpolate colors for each row
+    for y in range(height):
+        # Calculate the interpolation factor (0 at top, 1 at bottom)
+        t = y / (height - 1)
+        # Linearly interpolate between start_color and end_color
+        r = int(start_color[0] + t * (end_color[0] - start_color[0]))
+        g = int(start_color[1] + t * (end_color[1] - start_color[1]))
+        b = int(start_color[2] + t * (end_color[2] - start_color[2]))
+        # Draw a horizontal line at this y-coordinate with the interpolated color
+        pygame.draw.line(surface, (r, g, b), (0, y), (width - 1, y))
+
+# Generate the gradient once (since it doesn't change)
+create_linear_gradient(gradient_surface, config.COLOR_START, config.COLOR_END)
+
 # Load assets
 
 def rocket_surface():
@@ -169,7 +186,7 @@ while running:
                 game_over_time = pygame.time.get_ticks()
 
         # Draw
-        screen.fill(space_color)
+        screen.blit(gradient_surface, (0, 0))
         all_sprites.draw(screen)
         # Draw score
         font.render_to(screen, (10, 10), f"Score: {score}", config.TEXT_COLOR)
@@ -180,7 +197,7 @@ while running:
 
     else:
         # Game over screen
-        screen.fill(space_color)
+        screen.blit(gradient_surface, (0, 0))
         font.render_to(screen, (config.SCREEN_WIDTH // 2 - 180, config.SCREEN_HEIGHT // 2 - 20),
                        f"Game Over! Score: {score}", config.TEXT_COLOR)
         if pygame.time.get_ticks() - game_over_time > 2000:
