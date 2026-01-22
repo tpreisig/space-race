@@ -6,7 +6,7 @@
 
 Space Race is an arcade-style game built with Python and Pygame-CE. You play a spaceship pilot tasked with navigating through an asteroid field. The goal is to avoid collisions with asteroids while collecting power-ups and reaching the highest score possible. The game features a visually appealing interface, background music, sound effects for asteroid collisions and power-ups, and smooth controls, making it an engaging experience for players of all ages.
 
-☝️ ☝️ ️This project was developed as educational material for game development, inspired by classic arcade games but with a modern twist, including audio feedback and dynamic visuals.
+![Screenshot](assets/space_race.png)
 
 ## Requirements and Installation
 
@@ -63,10 +63,6 @@ if pygame.sprite.spritecollide(player, asteroid_group, True):
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Screenshots
-
-![Screenshot](assets/sp1.png)
 
 ## Contact
 
